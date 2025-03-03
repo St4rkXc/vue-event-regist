@@ -4,13 +4,13 @@ import RoundedCard from './RoundedCard.vue'
 
 <template>
     <RoundedCard>
-        <h3 class="p-4 border-b border-gray-200 font-medium text-xl">
+        <h3 v-if="$slots.header" class="p-4 border-b border-gray-200 font-medium text-xl"> <!-- Fungsinya untuk ngedect kalo ada data ga, klo ga, ga di pake slotnya -->
             <slot name="header"></slot>
         </h3>
-        <div class="border-b border-gray-200 p-4">
+        <div v-if="$slots.default" class="border-b border-gray-200 p-4">
             <slot></slot>
         </div>
-        <div class="p-4" >
+        <div v-if="$slots.footer" class="p-4" >
             <slot name="footer"></slot>
         </div>
     </RoundedCard>

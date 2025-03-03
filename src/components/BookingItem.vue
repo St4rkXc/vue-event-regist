@@ -1,11 +1,16 @@
 <script setup>
-import RoundedCard from './RoundedCard.vue';
+// import RoundedCard from './RoundedCard.vue';
+import MyButton from './MyButton.vue';
+import SectionCard from './SectionCard.vue';
 </script>
 
 <template>
-    <RoundedCard>
-        <div class="p-4">
-            Booking To Makan nasi goreng
-        </div>
-    </RoundedCard>
+    <SectionCard>
+        <template #default>
+            <div class="flex justify-between">
+                <div>Bookings</div>
+                <MyButton variant="danger">Cancel</MyButton>
+            </div>
+        </template>
+    </SectionCard>
 </template>
