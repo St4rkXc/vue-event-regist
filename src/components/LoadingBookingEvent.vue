@@ -1,19 +1,13 @@
 <script setup>
-// import RoundedCard from './RoundedCard.vue';
-import MyButton from './MyButton.vue';
 import SectionCard from './SectionCard.vue';
-
-defineProps ({
-    title : String
-})
 </script>
 
 <template>
     <SectionCard>
         <template #default>
             <div class="flex justify-between items-center">
-                <div>{{ title }}</div>
-                <MyButton variant="danger">Cancel</MyButton>
+                <div class="skeleton h-4 w-2/3"></div>
+                <div class="skeleton h-4 w-1/4"></div>
             </div>
         </template>
     </SectionCard>

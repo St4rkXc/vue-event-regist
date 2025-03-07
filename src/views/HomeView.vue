@@ -2,11 +2,16 @@
 import EventCard from '@/components/EventCard.vue'
 import BookingItem from '@/components/BookingItem.vue';
 import LaodingEvent from '@/components/LoadingEventCard.vue';
+import LoadingBookingEvent from '@/components/LoadingBookingEvent.vue';
 import { ref, onMounted } from 'vue';
 
+// variables
 const events = ref([])
 const eventsLoading = ref(false)
+const bookings = ref([])
+const bookingsLoading = ref(false)
 
+// function to fetch events
 const fetchEvents = async () => {
     eventsLoading.value = true
     try {
@@ -17,8 +22,43 @@ const fetchEvents = async () => {
     }
 }
 
+// function to handle registration
+const HandleRegistration = async (event) => {
+    const newBooking = {
+        id: Date.now().toString,
+        userID: 1,
+        eventID: event.id,
+        eventTitle: event.title,
+    };
+
+    await fetch('http://localhost:3001/bookings', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            ...newBooking,
+            status : 'confirmed',
+
+        }),
+    });
+}
+
+// function to fetch bookings
+const FetchBooking = async () => {
+    bookingsLoading.value = true
+    try {
+        const response = await fetch('http://localhost:3001/bookings')
+        bookings.value = await response.json()
+    } finally {
+        bookingsLoading.value = false
+    }
+}
+
+// need to fetch events and bookings on component mount
 onMounted( () => {
     fetchEvents()
+    FetchBooking()
 })
 
 </script>
@@ -35,7 +75,7 @@ onMounted( () => {
                     :title="event.title"
                     :when="event.date"
                     :desc="event.description"
-                    @register="console.log('Registering...')"
+                    @register="HandleRegistration(event)"
                 />
             </template>
             <template v-else>
@@ -44,7 +84,14 @@ onMounted( () => {
         </div>
         <h2 class="text-2xl font-medium">Your Bookings</h2>
         <div class="space-y-4">
-            <BookingItem v-for=" i in 3" :key="i" />
+            <template v-if="!bookingsLoading">
+                <BookingItem v-for=" booking in bookings" :key="booking.id" 
+                :title="booking.eventTitle"
+                />
+            </template>
+            <template v-else>
+                <LoadingBookingEvent v-for="i in 2" :key="i"/>
+            </template>
         </div>
     </div>
 </template>
