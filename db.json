@@ -29,13 +29,5 @@
       "location": "Convention Center, Downtown"
     }
   ],
-  "bookings": [
-    {
-      "id": "1743501924328",
-      "userID": 1,
-      "eventID": "4",
-      "eventTitle": "Rust Conference 2021",
-      "status": "confirmed"
-    }
-  ]
+  "bookings": []
 }

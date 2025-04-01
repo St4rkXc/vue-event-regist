@@ -1,26 +1,13 @@
 <script setup>
-import EventCard from '@/components/EventCard.vue'
 import BookingItem from '@/components/BookingItem.vue';
-import LaodingEvent from '@/components/LoadingEventCard.vue';
 import LoadingBookingEvent from '@/components/LoadingBookingEvent.vue';
+import EventList from '@/components/eventList.vue'
 import { ref, onMounted } from 'vue';
 
 // variables
-const events = ref([])
-const eventsLoading = ref(false)
 const bookings = ref([])
 const bookingsLoading = ref(false)
 
-// function to fetch events
-const fetchEvents = async () => {
-    eventsLoading.value = true
-    try {
-        const response = await fetch('http://localhost:3001/events')
-        events.value = await response.json()
-    } finally {
-        eventsLoading.value = false
-    }
-}
 
 // function to fetch bookings
 const FetchBooking = async () => {
@@ -92,7 +79,6 @@ const cancelBooking = async (bookingID) => {
 
 // need to fetch events and bookings on component mount
 onMounted( () => {
-    fetchEvents()
     FetchBooking()
 })
 
@@ -102,21 +88,7 @@ onMounted( () => {
     <div class="container mx-auto my-8 space-y-8 px-2 ">
         <h1 class="text-4xl font-medium">Event Booking App</h1>
         <h2 class="text-2xl font-medium">All Events</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <template v-if="!eventsLoading">
-                <EventCard
-                    v-for="event in events"
-                    :key="event.id"
-                    :title="event.title"
-                    :when="event.date"
-                    :desc="event.description"
-                    @register="HandleRegistration(event)"
-                />
-            </template>
-            <template v-else>
-                <LaodingEvent v-for="i in 4" :key="i"/>
-            </template>
-        </div>
+        <EventList @register="HandleRegistration($event)"/>
         <h2 class="text-2xl font-medium">Your Bookings</h2>
         <div class="space-y-4">
             <template v-if="!bookingsLoading">
