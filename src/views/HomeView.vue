@@ -22,13 +22,27 @@ const fetchEvents = async () => {
     }
 }
 
+// function to fetch bookings
+const FetchBooking = async () => {
+    bookingsLoading.value = true
+    try {
+        const response = await fetch('http://localhost:3001/bookings')
+        bookings.value = await response.json()
+    } finally {
+        bookingsLoading.value = false
+    }
+}
+
+const findBookingId = (id) => {
+    bookings.value.findIndex(booking => booking.id === id)
+}
+
 // function to handle registration
 const HandleRegistration = async (event) => {
     if(bookings.value.some( booking => booking.eventID === event.id && booking.userID === 1)){
         alert('You have already registered for this event')
         return
     }
-
     const newBooking = {
         id: Date.now().toString(),
         userID: 1,
@@ -49,7 +63,7 @@ const HandleRegistration = async (event) => {
             }),
         });
         if (response.ok){
-            const index = bookings.value.findIndex(booking => booking.eventID === event.id)
+            const index = findBookingId(newBooking.id)
             bookings.value[index] = await response.json()
         } else {
             throw new Error('Failed to create booking')
@@ -60,14 +74,19 @@ const HandleRegistration = async (event) => {
     }
 }
 
-// function to fetch bookings
-const FetchBooking = async () => {
-    bookingsLoading.value = true
+const cancelBooking = async (bookingID) => {
+    const index = findBookingId(bookingID)
+    const originalBooking = bookings.value[index]
+    bookings.value.splice(index, 1)
+
     try {
-        const response = await fetch('http://localhost:3001/bookings')
-        bookings.value = await response.json()
-    } finally {
-        bookingsLoading.value = false
+        const response = await fetch(`http://localhost:3001/bookings/${bookingID}`, {method: 'DELETE'})
+        if (!response.ok) {
+            throw new Error('Failed to cancel booking')
+        }
+    } catch (e){
+        console.error(`Failed to cancel booking : ${e}`)
+        bookings.value.splice(index, 0, originalBooking)
     }
 }
 
@@ -102,7 +121,7 @@ onMounted( () => {
         <div class="space-y-4">
             <template v-if="!bookingsLoading">
             <BookingItem v-for=" booking in bookings" :key="booking.id" 
-                :title="booking.eventTitle" :status="booking.status"
+                :title="booking.eventTitle" :status="booking.status" @cancelled="cancelBooking(booking.id)" 
                 />
             </template>
             <template v-else>

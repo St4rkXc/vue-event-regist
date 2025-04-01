@@ -2,11 +2,14 @@
 // import RoundedCard from './RoundedCard.vue';
 import MyButton from './MyButton.vue';
 import SectionCard from './SectionCard.vue';
+import { defineEmits } from 'vue';
 
 defineProps ({
     title : String,
     status : String
 })
+
+defineEmits (['cancelled'])
 </script>
 
 <template>
@@ -17,7 +20,7 @@ defineProps ({
                     <div>{{ title }}</div>
                     <div>{{ status}}</div>
                 </div>
-                <MyButton variant="danger">Cancel</MyButton>
+                <MyButton variant="danger" @click="$emit('cancelled')">Cancel</MyButton>
             </div>
         </template>
     </SectionCard>
