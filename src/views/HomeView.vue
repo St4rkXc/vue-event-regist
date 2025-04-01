@@ -24,24 +24,40 @@ const fetchEvents = async () => {
 
 // function to handle registration
 const HandleRegistration = async (event) => {
+    if(bookings.value.some( booking => booking.eventID === event.id && booking.userID === 1)){
+        alert('You have already registered for this event')
+        return
+    }
+
     const newBooking = {
-        id: Date.now().toString,
+        id: Date.now().toString(),
         userID: 1,
         eventID: event.id,
         eventTitle: event.title,
+        status : 'pending'
     };
-
-    await fetch('http://localhost:3001/bookings', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            ...newBooking,
-            status : 'confirmed',
-
-        }),
-    });
+    try{
+        const response = await fetch('http://localhost:3001/bookings', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                ...newBooking,
+                status : 'confirmed',
+    
+            }),
+        });
+        if (response.ok){
+            const index = bookings.value.findIndex(booking => booking.eventID === event.id)
+            bookings.value[index] = await response.json()
+        } else {
+            throw new Error('Failed to create booking')
+        }
+    } catch (e){
+        console.error(`Failed to register for event: ${e}`)
+        bookings.value = bookings.value.filter(booking => booking.eventID !== event.id)
+    }
 }
 
 // function to fetch bookings
@@ -85,8 +101,8 @@ onMounted( () => {
         <h2 class="text-2xl font-medium">Your Bookings</h2>
         <div class="space-y-4">
             <template v-if="!bookingsLoading">
-                <BookingItem v-for=" booking in bookings" :key="booking.id" 
-                :title="booking.eventTitle"
+            <BookingItem v-for=" booking in bookings" :key="booking.id" 
+                :title="booking.eventTitle" :status="booking.status"
                 />
             </template>
             <template v-else>
